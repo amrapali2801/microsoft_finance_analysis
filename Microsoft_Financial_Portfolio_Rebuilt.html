@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Microsoft Financial Analysis — Amrapali Waghmare</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Space+Grotesk:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:        #F4F0E8;
+  --bg2:       #EDE8DC;
+  --paper:     #FAF8F3;
+  --dark:      #1C1A14;
+  --darker:    #0F0E0A;
+  --ink:       #2C2A22;
+  --muted:     #7A7568;
+  --border:    #D8D2C4;
+  --amber:     #C8820A;
+  --amber-lt:  #F0C060;
+  --amber-bg:  #FDF3DC;
+  --teal:      #0E7B6B;
+  --teal-lt:   #5DBDAD;
+  --teal-bg:   #D6F0EC;
+  --rust:      #B84020;
+  --rust-lt:   #E88060;
+  --serif:     'Playfair Display', Georgia, serif;
+  --sans:      'Space Grotesk', sans-serif;
+  --mono:      'Space Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--sans); background: var(--bg); color: var(--ink); overflow-x: hidden; }
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 2.5rem; height: 54px;
+  background: rgba(244,240,232,0.92);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-brand { font-family: var(--serif); font-size: 1rem; font-weight: 700; color: var(--dark); }
+.nav-links { display: flex; gap: 2rem; }
+.nav-links a {
+  font-family: var(--mono); font-size: 0.68rem; letter-spacing: .1em; text-transform: uppercase;
+  text-decoration: none; color: var(--muted); transition: color .2s;
+}
+.nav-links a:hover { color: var(--amber); }
+
+/* HERO */
+.hero {
+  position: relative; min-height: 100vh;
+  background: var(--darker);
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 0 6vw 5.5rem;
+  overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 70% 55% at 75% 25%, rgba(200,130,10,0.22) 0%, transparent 60%),
+    radial-gradient(ellipse 55% 70% at 15% 85%, rgba(14,123,107,0.15) 0%, transparent 60%),
+    linear-gradient(150deg, #0F0E0A 0%, #1A160C 55%, #080804 100%);
+}
+.hero-lines {
+  position: absolute; inset: 0; opacity: .04;
+  background-image: repeating-linear-gradient(0deg, var(--amber-lt) 0, var(--amber-lt) 1px, transparent 1px, transparent 56px),
+                    repeating-linear-gradient(90deg, var(--amber-lt) 0, var(--amber-lt) 1px, transparent 1px, transparent 56px);
+}
+.hero-ticker {
+  position: absolute; top: 100px; right: 6vw;
+  font-family: var(--mono); font-size: 0.68rem;
+  color: rgba(200,130,10,0.45); text-align: right; line-height: 2;
+  animation: fadeRight 1s ease .8s both;
+}
+.hero-content { position: relative; z-index: 2; max-width: 860px; }
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--mono); font-size: 0.68rem; letter-spacing: .15em; text-transform: uppercase;
+  color: var(--amber-lt); margin-bottom: 1.5rem;
+  animation: fadeUp .7s ease .2s both;
+}
+.eyebrow-line { width: 28px; height: 1px; background: var(--amber); }
+
+/* ABOUT PROJECT SECTION — main new addition */
+.about-band {
+  background: var(--amber);
+  padding: 3.5rem 6vw;
+  position: relative;
+  overflow: hidden;
+}
+.about-band::before {
+  content: '';
+  position: absolute; top: -60px; right: -60px;
+  width: 220px; height: 220px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.07);
+  pointer-events: none;
+}
+.about-band::after {
+  content: '';
+  position: absolute; bottom: -80px; left: 10%;
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.06);
+  pointer-events: none;
+}
+.about-inner { position: relative; z-index: 1; max-width: 900px; }
+.about-headline {
+  font-family: var(--serif);
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  color: var(--darker);
+  font-weight: 900;
+  line-height: 1.15;
+  margin-bottom: 1.75rem;
+}
+.about-headline em { font-style: italic; }
+.about-bullets { list-style: none; display: flex; flex-direction: column; gap: 1rem; }
+.about-bullets li {
+  display: flex; align-items: flex-start; gap: 14px;
+  font-size: 0.95rem; color: rgba(28,26,20,0.85); line-height: 1.6;
+  font-weight: 500;
+}
+.about-bullets li::before {
+  content: '';
+  flex-shrink: 0;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--darker);
+  display: flex; align-items: center; justify-content: center;
+  margin-top: 1px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23F0C060'%3E%3Cpath fill-rule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  background-size: 14px; background-repeat: no-repeat; background-position: center;
+}
+
+.hero h1 {
+  font-family: var(--serif); font-size: clamp(3.2rem, 7.5vw, 6rem);
+  color: #fff; line-height: 1.02; margin-bottom: 1.2rem;
+  animation: fadeUp .7s ease .35s both;
+}
+.hero h1 em { font-style: italic; color: var(--amber-lt); }
+.hero-sub {
+  font-size: 1rem; color: rgba(255,255,255,.5); max-width: 540px;
+  line-height: 1.7; margin-bottom: 2.5rem;
+  animation: fadeUp .7s ease .5s both;
+}
+.hero-meta {
+  display: flex; gap: 2.5rem; flex-wrap: wrap;
+  animation: fadeUp .7s ease .65s both;
+}
+.hero-stat .num { font-family: var(--mono); font-size: 1.8rem; color: #fff; font-weight: 700; }
+.hero-stat .lbl { font-size: 0.68rem; color: rgba(255,255,255,.4); text-transform: uppercase; letter-spacing: .08em; margin-top: 3px; }
+.hero-divider { width: 1px; background: rgba(255,255,255,.12); }
+.hero-chips {
+  position: absolute; bottom: 2.5rem; right: 6vw;
+  display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end;
+  animation: fadeUp .7s ease .8s both;
+}
+.chip {
+  font-size: 0.67rem; font-family: var(--mono); letter-spacing: .05em; text-transform: uppercase;
+  padding: 5px 13px; border-radius: 2px;
+  border: 1px solid rgba(200,130,10,.4); color: var(--amber-lt);
+}
+
+/* SECTION WRAPPER */
+section { padding: 5rem 6vw; }
+.section-label {
+  font-family: var(--mono); font-size: 0.65rem; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--amber); margin-bottom: .6rem;
+}
+.section-title {
+  font-family: var(--serif); font-size: clamp(2rem, 4vw, 2.9rem);
+  color: var(--dark); line-height: 1.1; margin-bottom: 2.5rem;
+}
+.section-title em { font-style: italic; color: var(--muted); }
+
+/* KPI STRIP */
+#kpis { background: var(--dark); padding: 3.5rem 6vw; }
+.kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 0; }
+.kpi-card {
+  padding: 2rem; border-right: 1px solid rgba(255,255,255,.07);
+  transition: background .25s;
+}
+.kpi-card:last-child { border-right: none; }
+.kpi-card:hover { background: rgba(200,130,10,.1); }
+.kpi-tag {
+  font-family: var(--mono); font-size: 0.62rem; letter-spacing: .12em;
+  text-transform: uppercase; color: rgba(240,192,96,.55); margin-bottom: .7rem;
+}
+.kpi-num { font-family: var(--serif); font-size: 2.5rem; color: #fff; font-weight: 700; line-height: 1; }
+.kpi-change {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--mono); font-size: 0.67rem; margin-top: .5rem;
+  padding: 3px 9px; border-radius: 2px;
+}
+.up { background: rgba(14,123,107,.18); color: var(--teal-lt); }
+.neutral { background: rgba(200,130,10,.18); color: var(--amber-lt); }
+
+/* CHARTS */
+#charts { background: var(--paper); }
+.chart-tabs {
+  display: flex; gap: 2px; margin-bottom: 2rem;
+  border-bottom: 2px solid var(--border);
+}
+.ctab {
+  font-family: var(--mono); font-size: 0.68rem; letter-spacing: .06em; text-transform: uppercase;
+  padding: .6rem 1.25rem; cursor: pointer; border: none; background: transparent;
+  color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -2px;
+  transition: all .2s;
+}
+.ctab.active { color: var(--amber); border-bottom-color: var(--amber); }
+.ctab:hover:not(.active) { color: var(--ink); }
+.chart-panel { display: none; }
+.chart-panel.active { display: grid; }
+.two-up { grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+.one-up { grid-template-columns: 1fr; }
+.chart-box {
+  background: #fff; border: 1px solid var(--border); border-radius: 3px;
+  padding: 1.5rem;
+}
+.chart-box-title {
+  font-family: var(--mono); font-size: 0.65rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 1rem;
+}
+.chart-box canvas { max-height: 240px; }
+
+/* RATIOS */
+#ratios { background: var(--bg2); }
+.ratio-grid {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 1px; background: var(--border);
+  border: 1px solid var(--border);
+}
+.ratio-cell {
+  background: var(--paper); padding: 1.5rem;
+  transition: background .2s;
+}
+.ratio-cell:hover { background: var(--amber-bg); }
+.ratio-cat {
+  font-family: var(--mono); font-size: 0.6rem; letter-spacing: .15em; text-transform: uppercase;
+  color: var(--amber); margin-bottom: .35rem;
+}
+.ratio-name { font-size: 0.82rem; font-weight: 600; color: var(--dark); margin-bottom: .45rem; }
+.ratio-val { font-family: var(--serif); font-size: 1.9rem; color: var(--dark); font-weight: 700; }
+.ratio-arrow { font-size: 0.8rem; margin-left: 4px; }
+.ratio-note { font-size: 0.77rem; color: var(--muted); line-height: 1.55; margin-top: .5rem; }
+
+/* DCF */
+#dcf { background: var(--dark); color: #fff; }
+#dcf .section-title { color: #fff; }
+#dcf .section-title em { color: var(--amber-lt); }
+.dcf-layout { display: grid; grid-template-columns: 1fr 1.4fr; gap: 3rem; align-items: start; }
+.control-group { margin-bottom: 1.75rem; }
+.control-label {
+  font-family: var(--mono); font-size: 0.65rem; letter-spacing: .1em; text-transform: uppercase;
+  color: rgba(255,255,255,.45); margin-bottom: .5rem; display: flex; justify-content: space-between;
+}
+.control-val { color: var(--amber-lt); font-weight: 700; }
+input[type=range] {
+  width: 100%; -webkit-appearance: none; appearance: none;
+  height: 2px; background: rgba(255,255,255,.12); border-radius: 2px; outline: none;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
+  background: var(--amber); cursor: pointer;
+}
+.dcf-result-box {
+  background: rgba(200,130,10,.15); border: 1px solid rgba(200,130,10,.35);
+  border-radius: 3px; padding: 1.75rem; margin-top: 1.5rem;
+}
+.dcf-price-label { font-family: var(--mono); font-size: 0.67rem; letter-spacing: .1em; color: rgba(255,255,255,.45); text-transform: uppercase; margin-bottom: .4rem; }
+.dcf-price { font-family: var(--serif); font-size: 3.8rem; color: #fff; font-weight: 700; }
+.bridge-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: .6rem 0; border-bottom: 1px solid rgba(255,255,255,.07);
+  font-size: 0.82rem;
+}
+.bridge-row:last-child { border-bottom: none; font-weight: 600; color: var(--amber-lt); }
+.bridge-key { color: rgba(255,255,255,.55); }
+.bridge-val { font-family: var(--mono); color: #fff; }
+.dcf-chart-wrap {
+  margin-top: 1.5rem; background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.07); border-radius: 3px; padding: 1.25rem;
+}
+
+/* THESIS */
+#thesis { background: var(--bg); }
+.thesis-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.25rem; }
+.thesis-card {
+  background: var(--paper); border: 1px solid var(--border); border-radius: 3px;
+  padding: 1.75rem; position: relative; overflow: hidden;
+  transition: box-shadow .25s, transform .2s;
+}
+.thesis-card:hover { box-shadow: 0 8px 28px rgba(28,26,20,.1); transform: translateY(-2px); }
+.thesis-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+}
+.tc-amber::before { background: var(--amber); }
+.tc-teal::before  { background: var(--teal); }
+.tc-rust::before  { background: var(--rust); }
+.thesis-num { font-family: var(--mono); font-size: 0.62rem; color: var(--muted); margin-bottom: .7rem; }
+.thesis-title { font-family: var(--serif); font-size: 1.25rem; color: var(--dark); margin-bottom: .7rem; line-height: 1.2; font-weight: 700; }
+.thesis-body { font-size: 0.82rem; color: var(--muted); line-height: 1.65; }
+.thesis-metric {
+  margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);
+  font-family: var(--mono); font-size: 0.75rem; color: var(--amber);
+}
+
+/* ANALYST */
+#analyst {
+  background: var(--darker);
+  display: grid; grid-template-columns: 1fr 1.5fr; gap: 4rem;
+  padding: 5rem 6vw;
+}
+.analyst-name { font-family: var(--serif); font-size: 2.4rem; color: #fff; margin-bottom: .4rem; font-weight: 900; }
+.analyst-title { font-family: var(--mono); font-size: 0.7rem; letter-spacing: .12em; text-transform: uppercase; color: var(--amber); margin-bottom: 1.5rem; }
+.analyst-bio { font-size: 0.88rem; color: rgba(255,255,255,.5); line-height: 1.75; margin-bottom: 1.75rem; }
+.analyst-links { display: flex; gap: 10px; flex-wrap: wrap; }
+.analyst-link {
+  font-family: var(--mono); font-size: 0.67rem; letter-spacing: .07em; text-transform: uppercase;
+  padding: 8px 18px; border: 1px solid rgba(200,130,10,.35); color: var(--amber-lt);
+  text-decoration: none; border-radius: 2px; transition: all .2s;
+}
+.analyst-link:hover { background: rgba(200,130,10,.12); border-color: var(--amber); }
+.skill-group { margin-bottom: 1.4rem; }
+.skill-group-title { font-family: var(--mono); font-size: 0.62rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.35); margin-bottom: .55rem; }
+.skill-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.skill-tag {
+  font-size: 0.72rem; padding: 4px 10px; border-radius: 2px;
+  background: rgba(255,255,255,.05); color: rgba(255,255,255,.6);
+  border: 1px solid rgba(255,255,255,.09);
+}
+
+/* FOOTER */
+footer {
+  background: #050402; padding: 2rem 6vw;
+  display: flex; justify-content: space-between; align-items: center;
+  font-family: var(--mono); font-size: 0.65rem; color: rgba(255,255,255,.28);
+}
+
+/* ANIMATIONS */
+@keyframes fadeUp   { from { opacity:0; transform:translateY(22px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeRight { from { opacity:0; transform:translateX(22px); } to { opacity:1; transform:translateX(0); } }
+.reveal { opacity:0; transform:translateY(18px); transition: opacity .6s ease, transform .6s ease; }
+.revealed { opacity:1; transform:translateY(0); }
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .kpi-grid { grid-template-columns: repeat(2,1fr); }
+  .ratio-grid { grid-template-columns: repeat(2,1fr); }
+  .thesis-grid { grid-template-columns: 1fr 1fr; }
+  .dcf-layout { grid-template-columns: 1fr; }
+  #analyst { grid-template-columns: 1fr; gap: 2rem; }
+  .two-up { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 2.9rem; }
+}
+@media(max-width:600px){
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+  .ratio-grid { grid-template-columns: 1fr; }
+  .thesis-grid { grid-template-columns: 1fr; }
+  nav { padding: 0 1.25rem; }
+  section { padding: 3.5rem 5vw; }
+  .about-band { padding: 2.5rem 5vw; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">MSFT Analysis</div>
+  <div class="nav-links">
+    <a href="#kpis">Overview</a>
+    <a href="#charts">Charts</a>
+    <a href="#ratios">Ratios</a>
+    <a href="#dcf">DCF</a>
+    <a href="#thesis">Thesis</a>
+    <a href="#analyst">Analyst</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-lines"></div>
+  <div class="hero-ticker">
+    MSFT ↑ +14.9% rev YoY<br>
+    Net Income $101.8B<br>
+    FCF Margin 25.4%<br>
+    Op Margin 45.6%<br>
+    CAGR (rev) 14.5%<br>
+    D/E 0.80x ↓<br>
+    Int Coverage 53.9x
+  </div>
+  <div class="hero-content">
+    <div class="hero-eyebrow"><span class="eyebrow-line"></span>Financial Analyst Project</div>
+    <h1>Microsoft<br><em>5-Year Analysis</em></h1>
+    <p class="hero-sub">A comprehensive financial deep-dive spanning FY2020–FY2025 — covering three-statement modeling, ratio analysis, and a full DCF valuation.</p>
+    <div class="hero-meta">
+      <div class="hero-stat"><div class="num">$281.7B</div><div class="lbl">FY2025 Revenue</div></div>
+      <div class="hero-divider"></div>
+      <div class="hero-stat"><div class="num">14.5%</div><div class="lbl">5yr Rev CAGR</div></div>
+      <div class="hero-divider"></div>
+      <div class="hero-stat"><div class="num">45.6%</div><div class="lbl">Operating Margin</div></div>
+      <div class="hero-divider"></div>
+      <div class="hero-stat"><div class="num">$71.6B</div><div class="lbl">Free Cash Flow</div></div>
+    </div>
+  </div>
+  <div class="hero-chips">
+    <div class="chip">3-Statement Model</div>
+    <div class="chip">DCF Valuation</div>
+    <div class="chip">Ratio Analysis</div>
+    <div class="chip">Peer Comparison</div>
+  </div>
+</div>
+
+<!-- ABOUT PROJECT BAND -->
+<div class="about-band">
+  <div class="about-inner">
+    <div class="about-headline">A Hands-On Financial Analysis Project<br><em>Built to Demonstrate Real-World FP&amp;A Skills</em></div>
+    <ul class="about-bullets">
+      <li>Analyzed six full fiscal years of Microsoft's 10-K filings (FY2020–FY2025), extracting and modeling income statement, balance sheet, and cash flow data to build a complete three-statement financial model from scratch.</li>
+      <li>Applied industry-standard valuation techniques — including DCF modeling with adjustable WACC, terminal growth, and FCF growth assumptions — alongside liquidity, solvency, and profitability ratio analysis to surface actionable investment insights.</li>
+      <li>Synthesized findings into a structured investment thesis spanning six key dimensions: revenue mix shift, margin expansion, cash generation, balance sheet strength, AI moat, and risk factors — demonstrating the full workflow of a professional financial analyst.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- KPI STRIP -->
+<div id="kpis">
+  <div class="kpi-grid">
+    <div class="kpi-card reveal">
+      <div class="kpi-tag">Revenue</div>
+      <div class="kpi-num">$281.7B</div>
+      <div class="kpi-change up">▲ +14.9% YoY</div>
+    </div>
+    <div class="kpi-card reveal">
+      <div class="kpi-tag">Net Income</div>
+      <div class="kpi-num">$101.8B</div>
+      <div class="kpi-change up">▲ First $100B+ year</div>
+    </div>
+    <div class="kpi-card reveal">
+      <div class="kpi-tag">Free Cash Flow</div>
+      <div class="kpi-num">$71.6B</div>
+      <div class="kpi-change up">▲ +29.8% YoY</div>
+    </div>
+    <div class="kpi-card reveal">
+      <div class="kpi-tag">Total Assets</div>
+      <div class="kpi-num">$619B</div>
+      <div class="kpi-change neutral">2× since 2020</div>
+    </div>
+  </div>
+</div>
+
+<!-- CHARTS -->
+<section id="charts">
+  <div class="section-label">Visualizations</div>
+  <div class="section-title">5-Year <em>Financial Trends</em></div>
+
+  <div class="chart-tabs">
+    <button class="ctab active" onclick="showChart('revenue')">Revenue</button>
+    <button class="ctab" onclick="showChart('margins')">Margins</button>
+    <button class="ctab" onclick="showChart('cashflow')">Cash Flow</button>
+    <button class="ctab" onclick="showChart('returns')">Shareholder Returns</button>
+  </div>
+
+  <div class="chart-panel active two-up" id="cp-revenue">
+    <div class="chart-box reveal">
+      <div class="chart-box-title">Revenue by Segment ($B)</div>
+      <canvas id="c-rev"></canvas>
+    </div>
+    <div class="chart-box reveal">
+      <div class="chart-box-title">Revenue Mix Shift (2020 → 2025)</div>
+      <canvas id="c-mix"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-panel two-up" id="cp-margins">
+    <div class="chart-box reveal">
+      <div class="chart-box-title">Gross / Operating / Net Margins</div>
+      <canvas id="c-marg"></canvas>
+    </div>
+    <div class="chart-box reveal">
+      <div class="chart-box-title">Operating Income vs Net Income ($B)</div>
+      <canvas id="c-inc"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-panel two-up" id="cp-cashflow">
+    <div class="chart-box reveal">
+      <div class="chart-box-title">Operating Cash Flow vs CapEx ($B)</div>
+      <canvas id="c-cfo"></canvas>
+    </div>
+    <div class="chart-box reveal">
+      <div class="chart-box-title">Free Cash Flow ($B)</div>
+      <canvas id="c-fcf"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-panel one-up" id="cp-returns">
+    <div class="chart-box reveal">
+      <div class="chart-box-title">Total Shareholder Returns — Dividends + Buybacks ($B)</div>
+      <canvas id="c-ret" style="max-height:280px"></canvas>
+    </div>
+  </div>
+</section>
+
+<!-- RATIOS -->
+<section id="ratios">
+  <div class="section-label">Financial Ratios</div>
+  <div class="section-title">Health <em>at a Glance</em></div>
+  <div class="ratio-grid">
+    <div class="ratio-cell reveal">
+      <div class="ratio-cat">Liquidity</div>
+      <div class="ratio-name">Current Ratio</div>
+      <div class="ratio-val">1.35x <span class="ratio-arrow" style="color:var(--rust)">↓</span></div>
+      <div class="ratio-note">Declined from 2.52x (2020) — Microsoft deliberately deployed cash into AI infrastructure. Remains above 1.0, so obligations are fully covered.</div>
+    </div>
+    <div class="ratio-cell reveal">
+      <div class="ratio-cat">Solvency</div>
+      <div class="ratio-name">Debt / Equity</div>
+      <div class="ratio-val">0.80x <span class="ratio-arrow" style="color:var(--teal)">↓</span></div>
+      <div class="ratio-note">Steady deleveraging from 1.55x. Microsoft finances growth almost entirely from operating cash flows — a balance sheet fortress signal.</div>
+    </div>
+    <div class="ratio-cell reveal">
+      <div class="ratio-cat">Solvency</div>
+      <div class="ratio-name">Interest Coverage</div>
+      <div class="ratio-val">53.9x <span class="ratio-arrow" style="color:var(--teal)">↑</span></div>
+      <div class="ratio-note">Surged from 20.4x (2020). Microsoft could cover its interest expense 54 times over from operating income. Near-zero financial distress risk.</div>
+    </div>
+    <div class="ratio-cell reveal">
+      <div class="ratio-cat">Profitability</div>
+      <div class="ratio-name">Gross Margin</div>
+      <div class="ratio-val">68.8% <span class="ratio-arrow" style="color:var(--amber)">→</span></div>
+      <div class="ratio-note">Remarkably stable at ~69% for 5 years. Reflects dominant pricing power in cloud/software — each incremental dollar of revenue costs very little to deliver.</div>
+    </div>
+    <div class="ratio-cell reveal">
+      <div class="ratio-cat">Profitability</div>
+      <div class="ratio-name">Operating Margin</div>
+      <div class="ratio-val">45.6% <span class="ratio-arrow" style="color:var(--teal)">↑</span></div>
+      <div class="ratio-note">+900bps expansion since 2020. Azure and Microsoft 365's recurring SaaS structure creates operating leverage — fixed costs spread over rapidly growing revenue.</div>
+    </div>
+    <div class="ratio-cell reveal">
+      <div class="ratio-cat">Profitability</div>
+      <div class="ratio-name">Return on Equity</div>
+      <div class="ratio-val">29.6% <span class="ratio-arrow" style="color:var(--rust)">↓</span></div>
+      <div class="ratio-note">Declining from 37% — driven by rising equity from retained earnings accumulation, not profit weakness. Net income grew 130%+ over the period.</div>
+    </div>
+  </div>
+</section>
+
+<!-- DCF -->
+<section id="dcf" style="padding:5rem 6vw">
+  <div class="section-label">Valuation</div>
+  <div class="section-title">DCF <em>Valuation Model</em></div>
+
+  <div class="dcf-layout">
+    <div class="dcf-controls">
+      <div class="control-group">
+        <div class="control-label">
+          <span>WACC (Discount Rate)</span>
+          <span class="control-val" id="waccLabel">9.5%</span>
+        </div>
+        <input type="range" id="wacc" min="7" max="13" step="0.5" value="9.5">
+      </div>
+      <div class="control-group">
+        <div class="control-label">
+          <span>Terminal Growth Rate</span>
+          <span class="control-val" id="tgLabel">3.5%</span>
+        </div>
+        <input type="range" id="tg" min="2" max="5" step="0.5" value="3.5">
+      </div>
+      <div class="control-group">
+        <div class="control-label">
+          <span>Near-Term FCF Growth (Yr 1–3)</span>
+          <span class="control-val" id="g1Label">15.0%</span>
+        </div>
+        <input type="range" id="g1" min="8" max="22" step="1" value="15">
+      </div>
+
+      <div class="dcf-result-box">
+        <div class="dcf-price-label">Implied Share Price</div>
+        <div class="dcf-price" id="dcfPrice">$483</div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.38);margin-top:4px;font-family:var(--mono)">Base case · All assumptions adjustable above</div>
+      </div>
+    </div>
+
+    <div class="dcf-bridge">
+      <div id="bridgeRows"></div>
+      <div class="dcf-chart-wrap">
+        <div style="font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:1rem">Projected FCF ($B) — 5-Year Forecast</div>
+        <canvas id="c-proj" style="max-height:200px"></canvas>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- THESIS -->
+<section id="thesis">
+  <div class="section-label">Investment Thesis</div>
+  <div class="section-title">Key <em>Findings</em></div>
+  <div class="thesis-grid">
+    <div class="thesis-card tc-amber reveal">
+      <div class="thesis-num">01 — Revenue</div>
+      <div class="thesis-title">Service Revenue Tripled</div>
+      <div class="thesis-body">Service revenue grew from $75B (2020) to $218B (2025) — a 3× increase. Service mix is now 77% of total vs 52% in 2020. Azure, Microsoft 365, and Dynamics compound at double-digit rates with high switching costs and predictable renewal streams.</div>
+      <div class="thesis-metric">5yr Service CAGR: 23.8%</div>
+    </div>
+    <div class="thesis-card tc-teal reveal">
+      <div class="thesis-num">02 — Margins</div>
+      <div class="thesis-title">Operating Leverage Is Real</div>
+      <div class="thesis-body">Operating margin expanded 900bps (37% → 46%) while gross margin held stable at ~69%. Each incremental dollar of service revenue requires minimal additional cost — textbook operating leverage driven by a fixed-cost infrastructure base supporting exponential demand.</div>
+      <div class="thesis-metric">Op margin: 37.0% → 45.6%</div>
+    </div>
+    <div class="thesis-card tc-amber reveal">
+      <div class="thesis-num">03 — Cash</div>
+      <div class="thesis-title">FCF Machine Returns Capital</div>
+      <div class="thesis-body">FCF grew from $45B to $72B despite $65B in FY2025 CapEx for AI/datacenter buildout. Shareholders received $42B in dividends and buybacks in FY2025 alone. The dividend has increased every year and the payout is well-covered at ~34% of FCF.</div>
+      <div class="thesis-metric">5yr FCF CAGR: 13.5%</div>
+    </div>
+    <div class="thesis-card tc-teal reveal">
+      <div class="thesis-num">04 — Balance Sheet</div>
+      <div class="thesis-title">Fortress Finances</div>
+      <div class="thesis-body">Total assets doubled to $619B. Debt/equity fell from 1.55× to 0.80× as the company self-finances AI infrastructure with operating cash flows. Interest coverage of 54× signals near-zero default risk. Microsoft is one of only two AAA-rated U.S. companies.</div>
+      <div class="thesis-metric">D/E: 1.55x → 0.80x</div>
+    </div>
+    <div class="thesis-card tc-amber reveal">
+      <div class="thesis-num">05 — AI Moat</div>
+      <div class="thesis-title">R&amp;D Investment Compounds</div>
+      <div class="thesis-body">R&amp;D held at 12–13% of revenue every year, reaching $32B in FY2025. The OpenAI partnership, Copilot integration across all products, and Azure AI platform create structural advantages in enterprise software that are years ahead of most competitors.</div>
+      <div class="thesis-metric">FY2025 R&amp;D: $32.5B</div>
+    </div>
+    <div class="thesis-card tc-rust reveal">
+      <div class="thesis-num">06 — Risks</div>
+      <div class="thesis-title">Watch These Closely</div>
+      <div class="thesis-body">Key risks: (1) Azure growth deceleration as comparables get harder. (2) AI CapEx ROI uncertainty — $65B/yr is significant. (3) Regulatory scrutiny post-Activision. (4) FX headwinds on ~50% international revenue. (5) Current ratio declining toward 1×.</div>
+      <div class="thesis-metric">FY2025 CapEx: $64.6B (+45% YoY)</div>
+    </div>
+  </div>
+</section>
+
+<!-- ANALYST -->
+<div id="analyst">
+  <div class="analyst-left">
+    <div class="analyst-name">Amrapali Waghmare</div>
+    <!--div class="analyst-title">Financial Analyst · FP&amp;A · Corporate Finance</div-->
+    <!--p class="analyst-bio">Financial analyst with 5+ years across healthcare, SaaS, and IT services, supporting $25M+ portfolios through budgeting, forecasting, and margin analysis. Built Excel-driven FP&amp;A and corporate finance models informing $14M+ in forecast adjustments. MS in Management of Technology, Arizona State University (2025).</p-->
+    <!--div class="analyst-links">
+      <a href="mailto:amrapali.w@mailmywork.com" class="analyst-link">Email</a>
+      <a href="#" class="analyst-link">LinkedIn</a>
+      <a href="#" class="analyst-link">GitHub</a>
+    </div-->
+  </div>
+  <div class="skills-list">
+    <div class="skill-group">
+      <div class="skill-group-title">FP&amp;A &amp; Corporate Finance</div>
+      <div class="skill-tags">
+        <span class="skill-tag">3-Statement Modeling</span>
+        <span class="skill-tag">DCF Valuation</span>
+        <span class="skill-tag">LBO Analysis</span>
+        <span class="skill-tag">Budgeting &amp; Forecasting</span>
+        <span class="skill-tag">Variance Analysis</span>
+        <span class="skill-tag">Scenario Analysis</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <div class="skill-group-title">Tools &amp; Technology</div>
+      <div class="skill-tags">
+        <span class="skill-tag">Advanced Excel</span>
+        <span class="skill-tag">Power BI</span>
+        <span class="skill-tag">SQL</span>
+        <span class="skill-tag">Tableau</span>
+        <span class="skill-tag">Power Query</span>
+      </div>
+    </div>
+    <!--div class="skill-group">
+      <div class="skill-group-title">Domain Expertise</div>
+      <div class="skill-tags">
+        <span class="skill-tag">Healthcare Finance</span>
+        <span class="skill-tag">Medicare Advantage</span>
+        <span class="skill-tag">MLR Analysis</span>
+        <span class="skill-tag">SaaS Finance</span>
+        <span class="skill-tag">GAAP</span>
+      </div>
+    </div-->
+    <!--div class="skill-group">
+      <div class="skill-group-title">Certifications</div>
+      <div class="skill-tags">
+        <span class="skill-tag">365 Financial Analyst</span>
+        <span class="skill-tag">MS — Management of Technology, ASU 2025</span>
+      </div>
+    </div-->
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span>Microsoft Financial Analysis · Amrapali Waghmare · FY2020–FY2025</span>
+  <span>Data source: Microsoft 10-K Annual Reports · All figures USD millions</span>
+</footer>
+
+<script>
+const YEARS = ['2020','2021','2022','2023','2024','2025'];
+// New color palette: amber, teal, rust, muted
+const AMB  = '#C8820A', AMB2 = '#F0C060';
+const TEAL = '#0E7B6B', TEL2 = '#5DBDAD';
+const RUST = '#B84020', RST2 = '#E88060';
+const MUTED = '#7A7568';
+
+const gridOpts = {
+  x:{ grid:{color:'rgba(0,0,0,.05)'}, ticks:{font:{family:'Space Mono',size:10}, color:'#7A7568'} },
+  y:{ grid:{color:'rgba(0,0,0,.05)'}, ticks:{font:{family:'Space Mono',size:10}, color:'#7A7568'} }
+};
+const legendOpts = { labels:{ font:{family:'Space Grotesk',size:11}, color:'#2C2A22', padding:14 }};
+
+function mkChart(id, cfg){ return new Chart(document.getElementById(id), cfg); }
+
+mkChart('c-rev',{type:'bar', data:{labels:YEARS, datasets:[
+  {label:'Product',data:[68.0,71.1,72.7,64.7,64.8,63.9],backgroundColor:'#D8C8A8',borderRadius:2},
+  {label:'Service & Other',data:[75.0,97.0,125.5,147.2,180.3,217.8],backgroundColor:AMB,borderRadius:2}
+]}, options:{responsive:true,maintainAspectRatio:true,
+  plugins:{legend:legendOpts},
+  scales:{x:{...gridOpts.x,stacked:true},y:{...gridOpts.y,stacked:true,ticks:{...gridOpts.y.ticks,callback:v=>'$'+v+'B'}}}}});
+
+mkChart('c-mix',{type:'doughnut', data:{
+  labels:['Product (2020) 48%','Service (2020) 52%','Product (2025) 23%','Service (2025) 77%'],
+  datasets:[
+    {label:'2020',data:[48,52,0,0],backgroundColor:['#D8C8A8',AMB,'transparent','transparent'],borderWidth:0},
+    {label:'2025',data:[0,0,23,77],backgroundColor:['transparent','transparent','#A8D8D0',TEAL],borderWidth:0}
+  ]}, options:{responsive:true,maintainAspectRatio:true,cutout:'55%',plugins:{legend:{labels:{font:{family:'Space Grotesk',size:10.5},color:'#2C2A22'}}}}});
+
+mkChart('c-marg',{type:'line', data:{labels:YEARS, datasets:[
+  {label:'Gross Margin',data:[67.8,68.9,68.4,68.9,69.8,68.8],borderColor:TEAL,fill:false,tension:.4,pointRadius:4,pointBackgroundColor:TEAL},
+  {label:'Operating Margin',data:[37.0,41.6,42.1,41.8,44.6,45.6],borderColor:AMB,fill:false,tension:.4,pointRadius:4,pointBackgroundColor:AMB},
+  {label:'Net Margin',data:[31.0,36.5,36.7,34.1,36.0,36.1],borderColor:RUST,fill:false,tension:.4,pointRadius:4,pointBackgroundColor:RUST}
+]}, options:{responsive:true,maintainAspectRatio:true,plugins:{legend:legendOpts},
+  scales:{x:gridOpts.x,y:{...gridOpts.y,ticks:{...gridOpts.y.ticks,callback:v=>v+'%'}}}}});
+
+mkChart('c-inc',{type:'bar', data:{labels:YEARS, datasets:[
+  {label:'Operating Income',data:[53.0,69.9,83.4,88.5,109.4,128.5],backgroundColor:AMB,borderRadius:2},
+  {label:'Net Income',data:[44.3,61.3,72.7,72.4,88.1,101.8],backgroundColor:TEAL,borderRadius:2}
+]}, options:{responsive:true,maintainAspectRatio:true,plugins:{legend:legendOpts},
+  scales:{x:gridOpts.x,y:{...gridOpts.y,ticks:{...gridOpts.y.ticks,callback:v=>'$'+v+'B'}}}}});
+
+mkChart('c-cfo',{type:'bar', data:{labels:YEARS, datasets:[
+  {label:'Operating CF',data:[60.7,76.7,89.0,87.6,118.5,136.2],backgroundColor:AMB,borderRadius:2},
+  {label:'CapEx',data:[15.4,20.6,23.9,28.1,44.5,64.6],backgroundColor:RUST,borderRadius:2}
+]}, options:{responsive:true,maintainAspectRatio:true,plugins:{legend:legendOpts},
+  scales:{x:gridOpts.x,y:{...gridOpts.y,ticks:{...gridOpts.y.ticks,callback:v=>'$'+v+'B'}}}}});
+
+mkChart('c-fcf',{type:'line', data:{labels:YEARS, datasets:[
+  {label:'Free Cash Flow',data:[45.2,56.1,65.1,59.5,74.1,71.6],
+   borderColor:TEAL,backgroundColor:'rgba(14,123,107,.08)',fill:true,tension:.4,pointRadius:5,pointBackgroundColor:TEAL}
+]}, options:{responsive:true,maintainAspectRatio:true,plugins:{legend:legendOpts},
+  scales:{x:gridOpts.x,y:{...gridOpts.y,ticks:{...gridOpts.y.ticks,callback:v=>'$'+v+'B'}}}}});
+
+mkChart('c-ret',{type:'bar', data:{labels:YEARS, datasets:[
+  {label:'Dividends',data:[15.1,16.5,18.1,19.8,21.8,24.1],backgroundColor:'#D8C8A8',borderRadius:2},
+  {label:'Buybacks',data:[23.0,27.4,32.7,22.2,17.3,18.4],backgroundColor:AMB,borderRadius:2}
+]}, options:{responsive:true,maintainAspectRatio:true,plugins:{legend:legendOpts},
+  scales:{x:{...gridOpts.x,stacked:true},y:{...gridOpts.y,stacked:true,ticks:{...gridOpts.y.ticks,callback:v=>'$'+v+'B'}}}}});
+
+function showChart(name) {
+  ['revenue','margins','cashflow','returns'].forEach(t=>{
+    document.getElementById('cp-'+t).classList.remove('active');
+  });
+  document.getElementById('cp-'+name).classList.add('active');
+  document.querySelectorAll('.ctab').forEach((b,i)=>{
+    b.classList.toggle('active', ['revenue','margins','cashflow','returns'][i]===name);
+  });
+}
+
+let projChartInst = null;
+function calcDCF(){
+  const wacc = parseFloat(document.getElementById('wacc').value)/100;
+  const tg   = parseFloat(document.getElementById('tg').value)/100;
+  const g1   = parseFloat(document.getElementById('g1').value)/100;
+  const g2   = 0.12;
+  const base = 71611;
+
+  document.getElementById('waccLabel').textContent = (wacc*100).toFixed(1)+'%';
+  document.getElementById('tgLabel').textContent   = (tg*100).toFixed(1)+'%';
+  document.getElementById('g1Label').textContent   = (g1*100).toFixed(1)+'%';
+
+  const fcfs  = [base*(1+g1), base*(1+g1)**2, base*(1+g1)**3, base*(1+g1)**3*(1+g2), base*(1+g1)**3*(1+g2)**2];
+  const pvs   = fcfs.map((f,i)=>f/(1+wacc)**(i+1));
+  const tv    = fcfs[4]*(1+tg)/(wacc-tg);
+  const pvTv  = tv/(1+wacc)**5;
+  const ev    = pvs.reduce((a,b)=>a+b,0)+pvTv;
+  const eq    = ev-9890;
+  const price = eq/7465;
+
+  document.getElementById('dcfPrice').textContent = '$'+Math.round(price).toLocaleString();
+
+  const rows = [
+    ['Sum of PV (FCFs)',      '$'+(pvs.reduce((a,b)=>a+b,0)/1000).toFixed(0)+'B'],
+    ['Terminal Value',         '$'+(tv/1000).toFixed(0)+'B'],
+    ['PV of Terminal Value',   '$'+(pvTv/1000).toFixed(0)+'B'],
+    ['Enterprise Value',       '$'+(ev/1000).toFixed(0)+'B'],
+    ['Less: Net Debt',         '($9.9B)'],
+    ['Equity Value',           '$'+(eq/1000).toFixed(0)+'B'],
+    ['Shares Outstanding',     '7,465M'],
+    ['Implied Price / Share',  '$'+Math.round(price).toLocaleString()],
+  ];
+  document.getElementById('bridgeRows').innerHTML = rows.map(([k,v])=>`
+    <div class="bridge-row"><span class="bridge-key">${k}</span><span class="bridge-val">${v}</span></div>`).join('');
+
+  const labels = ['FY2026E','FY2027E','FY2028E','FY2029E','FY2030E'];
+  const fcfBn  = fcfs.map(f=>(f/1000).toFixed(1));
+  const pvBn   = pvs.map(f=>(f/1000).toFixed(1));
+
+  if(projChartInst) projChartInst.destroy();
+  projChartInst = mkChart('c-proj',{type:'bar', data:{labels, datasets:[
+    {label:'Projected FCF',data:fcfBn,backgroundColor:'rgba(93,189,173,.75)',borderRadius:2},
+    {label:'PV of FCF',    data:pvBn, backgroundColor:'rgba(200,130,10,.6)',borderRadius:2}
+  ]}, options:{responsive:true,maintainAspectRatio:true,
+    plugins:{legend:{labels:{font:{family:'Space Grotesk',size:11},color:'rgba(255,255,255,.6)'}}},
+    scales:{
+      x:{grid:{color:'rgba(255,255,255,.05)'},ticks:{font:{family:'Space Mono',size:10},color:'rgba(255,255,255,.38)'}},
+      y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{font:{family:'Space Mono',size:10},color:'rgba(255,255,255,.38)',callback:v=>'$'+v+'B'}}
+    }}});
+}
+
+document.getElementById('wacc').addEventListener('input', calcDCF);
+document.getElementById('tg').addEventListener('input', calcDCF);
+document.getElementById('g1').addEventListener('input', calcDCF);
+calcDCF();
+
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('revealed'); observer.unobserve(e.target); } });
+}, {threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+</script>
+</body>
+</html>
